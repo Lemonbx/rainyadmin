@@ -7,6 +7,9 @@ import java.io.File
 import java.sql.Connection
 import java.util.*
 
+/**
+ * 一个纯字符串拼接的代码生成。仅适用于mysql
+ */
 class GenerateCode
 
 val db = "matchmaker"
@@ -212,7 +215,7 @@ fun getTableComment(tableName: String, conn: Connection): String {
     val pstm = conn.prepareStatement(
         "SELECT table_comment FROM information_schema.tables WHERE table_schema = ? AND table_name = ?"
     )
-    pstm.setString(1, "soularts")
+    pstm.setString(1, db)
     pstm.setString(2, tableName)
     val rs = pstm.executeQuery()
     try {
@@ -231,7 +234,7 @@ fun getColComment(col: String, tableName: String, conn: Connection): String {
     val pstm = conn.prepareStatement(
         "SELECT column_comment FROM information_schema.columns WHERE table_schema = ? AND table_name = ? AND column_name = ?"
     )
-    pstm.setString(1, "soularts")
+    pstm.setString(1, db)
     pstm.setString(2, tableName)
     pstm.setString(3, col)
     val rs = pstm.executeQuery()
