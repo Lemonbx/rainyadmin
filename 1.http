@@ -1,0 +1,17 @@
+GET https://api.openapi.baiyizu.cn/api/open/access_token?account=baoqingkeji&signature=520a260f16e7404a9f3850e6c6cd1831
+
+
+###
+
+POST https://api.openapi.baiyizu.cn/api/openapi/v1/gateway
+content-type: application/json
+
+{
+  "account": "baoqingkeji",
+  "access_token": "bee690c73dbd41079f05e83033cf16dd",
+  "product_code": "23010",
+  "params": {
+    "name":"何卫哨",
+    "idCard":"f20ff5984a7bc19cbe3a1e44eff6a2f1"
+  }
+}
