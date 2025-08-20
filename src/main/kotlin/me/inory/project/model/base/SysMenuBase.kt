@@ -28,5 +28,7 @@ interface SysMenuBase: BaseEntity {
 	/**  */
 	val component: String?
 
+    /**  */
+    val sort: Int?
 }
 

@@ -93,18 +93,6 @@ class MenuService {
         return buildMenuTree(completeMenus)
     }
 
-    private fun addParentMenuIds(menuIds: MutableSet<Long>, parentId: Long?, allMenus: List<SysMenu>) {
-        if (parentId == null) return
-        
-        menuIds.add(parentId)
-        
-        // 从已有菜单数据中查找父级菜单
-        val parent = allMenus.find { it.id == parentId }
-        if (parent != null) {
-            addParentMenuIds(menuIds, parent.parentId, allMenus)
-        }
-    }
-
     fun getMenuTree(): List<MenuTreeNode> {
         // 对于树形结构，需要获取包含parentId的数据
         val allMenus = sqlClient.createQuery(SysMenu::class) {
@@ -123,7 +111,9 @@ class MenuService {
         val rootMenus = mutableListOf<MenuTreeNode>()
 
         fun buildNode(menu: SysMenu): MenuTreeNode {
-            val children = menus.filter { it.parentId == menu.id }
+            val children = menus
+                .filter { it.parentId == menu.id }
+                .sortedBy { it.sort ?: 0 }
                 .map { buildNode(it) }
             return MenuTreeNode(
                 id = menu.id,
@@ -132,11 +122,14 @@ class MenuService {
                 component = menu.component,
                 logo = menu.logo,
                 type = menu.type,
+                sort = menu.sort,
                 children = if (children.isEmpty()) null else children
             )
         }
 
-        menus.filter { it.parentId == null }
+        menus
+            .filter { it.parentId == null }
+            .sortedBy { it.sort ?: 0 }
             .forEach { rootMenus.add(buildNode(it)) }
 
         return rootMenus

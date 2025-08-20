@@ -25,6 +25,8 @@ RoleDetailView {
         logo
         component
         parentId
+        // 新增：排序
+        sort
     }
 }
 

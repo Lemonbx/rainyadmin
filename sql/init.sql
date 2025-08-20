@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS sys_menu (
     perms VARCHAR(200) COMMENT '权限标识',
     type INT DEFAULT 0 COMMENT '菜单类型：0目录 1页面 2按钮',
     component VARCHAR(200) COMMENT '组件路径',
+    sort INT DEFAULT 0 COMMENT '排序',
     parent_id BIGINT COMMENT '父级菜单ID',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

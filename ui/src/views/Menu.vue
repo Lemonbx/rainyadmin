@@ -72,6 +72,10 @@
             placeholder="请选择菜单类型"
           />
         </n-form-item>
+        <!-- 新增：排序 -->
+        <n-form-item label="排序" path="sort">
+          <n-input-number v-model:value="menuForm.sort" :min="0" />
+        </n-form-item>
         <n-form-item label="父级菜单">
           <n-tree-select
             v-model:value="menuForm.parentId"
@@ -150,7 +154,9 @@ const menuForm = reactive({
   perms: '',
   type: 0,
   component: '',
-  parentId: null
+  parentId: null,
+  // 新增：排序
+  sort: 0
 })
 
 const menuRules = {
@@ -220,6 +226,13 @@ const columns = [
     title: '组件路径',
     key: 'component',
     render: (row) => row.component || '-'
+  },
+  // 新增：排序列
+  {
+    title: '排序',
+    key: 'sort',
+    width: 80,
+    render: (row) => row.sort ?? 0
   },
   {
     title: '操作',
@@ -299,7 +312,9 @@ const handleAdd = () => {
     perms: '',
     type: 0,
     component: '',
-    parentId: null
+    parentId: null,
+    // 新增：默认排序
+    sort: 0
   })
   showModal.value = true
 }
@@ -312,9 +327,11 @@ const handleAddChild = (parent) => {
     logo: '',
     path: '',
     perms: '',
-    type: parent.type === 0 ? 1 : 2, // 目录下新增页面，页面下新增按钮
+    type: parent.type === 0 ? 1 : 2,
     component: '',
-    parentId: parent.id
+    parentId: parent.id,
+    // 新增：默认排序
+    sort: 0
   })
   showModal.value = true
 }
@@ -332,7 +349,9 @@ const handleEdit = async (row) => {
       perms: menu.perms,
       type: menu.type,
       component: menu.component,
-      parentId: menu.parentId
+      parentId: menu.parentId,
+      // 新增：排序
+      sort: menu.sort ?? 0
     })
     showModal.value = true
   } catch (error) {
