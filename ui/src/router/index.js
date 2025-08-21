@@ -34,12 +34,18 @@ const mainRoute = {
 
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/admin/'),
   routes: [...basicRoutes, mainRoute]
 })
 
 // 动态添加路由 - 完全从接口数据生成
 export function addDynamicRoutes(userMenus, userPermissions) {
+  // 先清除已存在的动态路由，避免重复添加
+  const userStore = useUserStore()
+  if (userStore.dynamicRoutesAdded) {
+    return
+  }
+  
   // 递归构建路由
   function buildRoutes(menus) {
     const routes = []
@@ -78,6 +84,9 @@ export function addDynamicRoutes(userMenus, userPermissions) {
     router.addRoute('MainLayout', route)
   })
   
+  // 标记动态路由已添加
+  userStore.dynamicRoutesAdded = true
+  
   console.log('动态路由已添加:', dynamicRoutes)
 }
 
@@ -106,14 +115,18 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // 已登录但没有用户信息，获取用户信息
-  if (!userStore.userInfo) {
+  // 已登录但没有用户信息或动态路由未添加
+  if (!userStore.userInfo || !userStore.dynamicRoutesAdded) {
     try {
-      await userStore.getUserInfo()
-      // 添加动态路由
-      addDynamicRoutes(userStore.userInfo.menus, userStore.userInfo.permissions)
+      // 获取用户信息（如果还没有）
+      if (!userStore.userInfo) {
+        await userStore.getUserInfo()
+      }
       
-
+      // 添加动态路由（如果还没有添加）
+      if (!userStore.dynamicRoutesAdded) {
+        addDynamicRoutes(userStore.userInfo.menus, userStore.userInfo.permissions)
+      }
       
       // 重新导航到目标路由
       next({ ...to, replace: true })
