@@ -92,7 +92,17 @@ class MenuService {
         val completeMenus = allMenus.filter { it.id in allMenuIds }
         return buildMenuTree(completeMenus)
     }
+    private fun addParentMenuIds(menuIds: MutableSet<Long>, parentId: Long?, allMenus: List<SysMenu>) {
+        if (parentId == null) return
 
+        menuIds.add(parentId)
+
+        // 从已有菜单数据中查找父级菜单
+        val parent = allMenus.find { it.id == parentId }
+        if (parent != null) {
+            addParentMenuIds(menuIds, parent.parentId, allMenus)
+        }
+    }
     fun getMenuTree(): List<MenuTreeNode> {
         // 对于树形结构，需要获取包含parentId的数据
         val allMenus = sqlClient.createQuery(SysMenu::class) {
