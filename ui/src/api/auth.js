@@ -14,5 +14,10 @@ export const authAPI = {
   // 退出登录
   logout() {
     return request.post('/auth/logout')
+  },
+
+  // 修改密码
+  changePassword(data) {
+    return request.post('/auth/changePassword', data)
   }
 }

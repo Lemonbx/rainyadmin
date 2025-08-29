@@ -4,12 +4,14 @@ import cn.dev33.satoken.stp.StpUtil
 import cn.hutool.crypto.digest.BCrypt
 import me.inory.framework.ext.sqlClient
 import me.inory.project.dto.LoginInput
+import me.inory.project.dto.ChangePasswordInput
 import me.inory.project.dto.MenuTreeNode
 import me.inory.project.dto.UserInfo
 import me.inory.project.model.*
 import me.inory.util.PasswordUtil
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class AuthService {
@@ -106,5 +108,35 @@ class AuthService {
 
     fun logout() {
         StpUtil.logout()
+    }
+
+    fun changePassword(userId: Long, input: ChangePasswordInput): Boolean {
+        // 获取当前用户信息
+        val user = sqlClient.createQuery(SysUser::class) {
+            where(table.id eq userId)
+            select(
+                table.fetchBy {
+                    allScalarFields()
+                }
+            )
+        }.fetchOneOrNull() ?: throw RuntimeException("用户不存在")
+
+        // 验证旧密码
+        if (!BCrypt.checkpw(input.oldPassword + user.salt, user.password)) {
+            throw RuntimeException("当前密码错误")
+        }
+
+        // 生成新的盐值和加密新密码
+        val newSalt = UUID.randomUUID().toString()
+        val hashedNewPassword = BCrypt.hashpw(input.newPassword + newSalt, BCrypt.gensalt())
+
+        // 更新密码
+        val updatedUser = user.copy {
+            password = hashedNewPassword
+            salt = newSalt
+        }
+
+        val result = sqlClient.save(updatedUser)
+        return result.totalAffectedRowCount > 0
     }
 }

@@ -80,6 +80,9 @@
       </n-layout-content>
     </n-layout>
   </n-layout>
+
+  <!-- 修改密码弹窗 -->
+  <ChangePasswordModal v-model:show="showChangePasswordModal" />
 </template>
 
 <script setup>
@@ -94,9 +97,11 @@ import {
   PeopleOutline,
   ShieldOutline,
   MenuOutline,
-  LogOutOutline
+  LogOutOutline,
+  KeyOutline
 } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
+import ChangePasswordModal from '@/components/ChangePasswordModal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -173,6 +178,14 @@ const getMenuIcon = (iconName) => {
 
 // 用户下拉菜单
 const userDropdownOptions = [
+  {
+    label: '修改密码',
+    key: 'changePassword',
+    icon: renderIcon(KeyOutline)
+  },
+  {
+    type: 'divider'
+  },
   {
     label: '退出登录',
     key: 'logout',
@@ -270,9 +283,14 @@ const handleTabChange = (tabName) => {
   }
 }
 
+// 修改密码弹窗状态
+const showChangePasswordModal = ref(false)
+
 // 处理用户下拉菜单
 const handleUserDropdown = async (key) => {
-  if (key === 'logout') {
+  if (key === 'changePassword') {
+    showChangePasswordModal.value = true
+  } else if (key === 'logout') {
     try {
       await userStore.logout()
       tabsStore.clearAllTabs()
