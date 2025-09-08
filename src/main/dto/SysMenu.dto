@@ -1,0 +1,83 @@
+export me.inory.project.model.SysMenu
+    -> package me.inory.project.dto
+
+MenuListView {
+    id
+    name
+    logo
+    path
+    perms
+    type
+    component
+    parentId
+    createTime
+    updateTime
+    parent {
+        id
+        name
+    }
+}
+
+MenuDetailView {
+    #allScalars
+    parent {
+        id
+        name
+        type
+    }
+}
+
+MenuSimpleView {
+    id
+    name
+    type
+    path
+    perms
+    logo
+    component
+    sort
+}
+
+specification MenuSpecification {
+    like/i(name)
+    eq(type)
+    like/i(path)
+    like/i(perms)
+    flat(parent) {
+        like/i(name) as parentName
+    }
+}
+
+input MenuCreateInput {
+    name
+    logo
+    path
+    perms
+    type
+    component
+    parentId
+    sort
+}
+
+input MenuUpdateInput {
+    id!
+    name
+    logo
+    path
+    perms
+    type
+    component
+    parentId
+    sort
+}
+
+MenuTreeNode {
+    id
+    name
+    path
+    component
+    logo
+    type
+    children*
+    sort
+}

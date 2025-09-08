@@ -1,0 +1,64 @@
+export me.inory.project.model.SysUser
+    -> package me.inory.project.dto
+
+UserListView {
+    id
+    nickname
+    loginname
+    createTime
+    updateTime
+    roles {
+        id
+        name
+        key
+    }
+}
+
+UserDetailView {
+    #allScalars
+    roles {
+        id
+        name  
+        key
+    }
+}
+
+UserSimpleView {
+    id
+    nickname
+    loginname
+}
+
+specification UserSpecification {
+    like/i(nickname)
+    like/i(loginname)
+    flat(roles) {
+        like/i(name) as roleName
+    }
+}
+
+input LoginInput {
+    loginname
+    password
+}
+
+input UserCreateInput {
+    nickname
+    loginname
+    password
+    roleIds
+}
+
+input UserUpdateInput {
+    id!
+    nickname
+    loginname
+    password
+    roleIds
+}
+
+input ChangePasswordInput {
+    oldPassword:String
+    newPassword:String
+}
+

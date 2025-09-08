@@ -1,0 +1,59 @@
+export me.inory.project.model.SysRole
+    -> package me.inory.project.dto
+
+RoleListView {
+    id
+    name
+    key
+    createTime
+    updateTime
+    menus {
+        id
+        name
+        type
+    }
+}
+
+RoleDetailView {
+    #allScalars
+    menus {
+        id
+        name
+        type
+        path
+        perms
+        logo
+        component
+        parentId
+        // 新增：排序
+        sort
+    }
+}
+
+RoleSimpleView {
+    id
+    name
+    key
+}
+
+specification RoleSpecification {
+    like/i(name)
+    like/i(key)
+    flat(menus) {
+        like/i(name) as menuName
+        eq(type) as menuType
+    }
+}
+
+input RoleCreateInput {
+    name
+    key
+    menuIds
+}
+
+input RoleUpdateInput {
+    id!
+    name
+    key
+    menuIds
+}
