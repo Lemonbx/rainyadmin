@@ -34,7 +34,7 @@ class MenuService {
             where(table.parentId eq id)
             select(count(table))
         }.fetchOne()
-        
+
         if (childCount > 0) {
             throw RuntimeException("存在子菜单，无法删除")
         }
