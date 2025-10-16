@@ -12,8 +12,9 @@ import java.util.*
  */
 class GenerateCode
 
-val db = "matchmaker"
+val db = "j25923"
 fun main() {
+    print(System.getProperty("user.dir"))
     val dataSource = HikariDataSource()
     dataSource.jdbcUrl =
         "jdbc:mysql://localhost/$db?useUnicode=true&characterEncoding=utf8&useSSL=true&autoReconnect=true&reWriteBatchedInserts=true"
@@ -32,7 +33,7 @@ fun main() {
     //entity存放的包
     val packageName = "me.inory.project.model"
     //源码目录
-    val baseDir = "C:\\code\\matchmaker-admin-kt\\src\\main\\kotlin"
+    val baseDir = "${System.getProperty("user.dir")}/src/main/kotlin"
     val entityPack = "$baseDir/${packageName.replace(".", "/")}"
     val basePack = "$entityPack/base"
     File(basePack).mkdirs()
@@ -62,14 +63,15 @@ fun main() {
             //columnName转换为kotlin属性名驼峰，首字母小写
             var cColumnName = snakeToCamel(columnName)
             //把_id结尾的字段放在entity中，非base类中，但是仅第一次才生成
-            if (columnName.endsWith("_id")) {
+            val type = typeParse(columnType)
+            if (columnName.endsWith("_id") || type == "Any") {
                 val entityFile = File("$entityPack/${className}.kt")
                 if (entityFile.exists())
                     continue
                 entityCols.add(
                     Column(
                         cColumnName,
-                        typeParse(columnType),
+                        type,
                         getColComment(columnName, tableName, conn),
                         columns.getBoolean("NULLABLE"),
                         pks.contains(columnName)
@@ -80,7 +82,7 @@ fun main() {
             cols.add(
                 Column(
                     cColumnName,
-                    typeParse(columnType),
+                    type,
                     getColComment(columnName, tableName, conn),
                     columns.getBoolean("NULLABLE"),
                     pks.contains(columnName)
@@ -167,9 +169,12 @@ fun typeParse(columnType: String): String {
         "int8" -> "Long"
         "bigint" -> "Long"
         "varchar" -> "String"
-        "timestamp" -> "Date"
+        "date" -> "LocalDate"
+        "datetime" -> "LocalDateTime"
         "text" -> "String"
-        "numeric" -> "BigDecimal"
+        "tinyint" -> "Boolean"
+        "longtext" -> "String"
+        "decimal" -> "BigDecimal"
         "bpchar" -> "String"
         else -> {
             println("未知类型：$columnType")
@@ -184,6 +189,8 @@ fun getAllImport(columns: List<Column>): Set<String> {
     columns.forEach {
         when (it.type) {
             "Date" -> set.add("import java.util.Date")
+            "LocalDate" -> set.add("import java.time.LocalDate")
+            "LocalDateTime" -> set.add("import java.time.LocalDateTime")
             "BigDecimal" -> set.add("import java.math.BigDecimal")
         }
     }
